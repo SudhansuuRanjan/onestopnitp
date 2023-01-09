@@ -73,7 +73,7 @@ const HomeScreen = ({ navigation }) => {
                     >
                         <Image source={Resources} style={styles.tabImage} />
                         <Text style={styles.buttonLabel}>
-                            Resources
+                            Learn
                         </Text>
                     </TouchableOpacity>
 
@@ -83,24 +83,6 @@ const HomeScreen = ({ navigation }) => {
                         <Image source={Clubs} style={styles.tabImage} />
                         <Text style={styles.buttonLabel}>
                             Clubs
-                        </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={() => navigation.navigate('SellBuy')}
-                        style={[styles.button, { backgroundColor: '#93D4C9' }]}
-                    >
-                        <Image source={Shopping} style={styles.tabImage} />
-                        <Text style={styles.buttonLabel}>
-                            Sell/Buy
-                        </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={() => navigation.navigate('Blogs')}
-                        style={[styles.button, { backgroundColor: '#FBD3CB' }]}
-                    >
-                        <Image source={Blogs} style={styles.tabImage} />
-                        <Text style={styles.buttonLabel}>
-                            Blogs
                         </Text>
                     </TouchableOpacity>
 
@@ -155,6 +137,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#666',
         marginBottom: 5,
+        paddingTop:20,
     },
     label: {
         textAlign: "center",
@@ -166,7 +149,9 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         flexWrap: "wrap",
         marginVertical: 20,
-        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+        justifyContent: 'space-evenly',
         paddingHorizontal: 8,
         paddingBottom: 50,
     },

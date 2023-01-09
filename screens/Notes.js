@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
     },
     electricalBg: {
-        height: 150,
+        height: 130,
         width: '100%',
         justifySelf: 'center',
         alignSelf: 'center',
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     text: {
         color: "white",
         fontSize: 30,
-        lineHeight: 150,
+        lineHeight: 130,
         fontWeight: "bold",
         textAlign: "center",
         backgroundColor: "#111000c0",
