@@ -1,6 +1,8 @@
-import { StyleSheet, Text, View, Image, ScrollView, Button, Linking, TouchableOpacity } from 'react-native'
-import React, { Children, useCallback } from 'react'
+import { StyleSheet, Text, View, Image, ScrollView, ActivityIndicator, Linking, TouchableOpacity } from 'react-native'
+import React, { useEffect, useCallback, useState } from 'react'
 import Icon from 'react-native-vector-icons/Ionicons';
+import firestore from '@react-native-firebase/firestore';
+
 
 
 const OpenURLButton = ({ url, children }) => {
@@ -17,72 +19,97 @@ const OpenURLButton = ({ url, children }) => {
 };
 
 const ClubDetails = ({ navigation, route }) => {
+
+    const [clubs, setClubs] = useState();
+    const [loading, setLoading] = useState(true);
+
+    const clubRef = firestore().collection("Clubs");
+
+    useEffect(() => {
+        clubRef.where('id', '==', 11).onSnapshot((querySnapshot) => {
+            const clubs = [];
+            querySnapshot.forEach((doc) => {
+                clubs.push(doc.data());
+            });
+            setClubs(clubs);
+            setLoading(false);
+            // console.log(clubs);
+        });
+    }, []);
+
+
     return (
         <View style={{ flex: 1, backgroundColor: 'rgba(241, 250, 255,0.6)', }}>
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.imgContainer}>
                     <Image source={route.params.data.img} style={styles.clubImg} />
                     <Text style={styles.clubName}>{route.params.data.name}</Text>
-                    <View style={styles.textContainer}>
-                        <Text style={styles.heading}>About</Text>
-                        <Text style={styles.text}>
-                            IEEE Student Branch, NIT Patna was established with an enthusiastic
-                            initiative of 13 students of NIT Patna enrolled in B.Tech programme of
-                            Electrical Engineering and Electronics and Communication Engineering
-                            under the leadership of Prof Kumar Abhishek,Assistant professor of
-                            Computer Science and Engineering. In this whole path our
-                            mentors were the three great visionaries of our college Dr Asok De (Director NIT Patna), Dr D.K. Singh (HOD, Electronics and
-                            Communication Engineering), and Dr M.P Singh (HOD, Computer
-                            Science and Engineering). Prof. Kumar Abhishek became the first
-                            Branch Counsellor of the Student Branch and Shruti Neha became
-                            the first Student Branch Chair. IEEE Student Branch, NITP was
-                            established with a vision of making students aware of new
-                            developments in various engineering fields and to provide support
-                            in implementing new innovative ideas of future engineers which
-                            can give a new shape to this world.
-                        </Text>
 
-                        <Text style={styles.heading}>Reach us at:</Text>
-
-                        <View style={styles.socialContainer}>
-
-                            <View style={styles.socialLink}>
-                                <Icon name="logo-instagram" style={{ paddingRight: 10 }} size={25} color='grey' />
-                                <OpenURLButton url="https://www.instagram.com/ieee_nitp">
-                                    <Text style={{ color: '#0034BA', textDecorationLine: 'underline', fontWeight: '500', fontSize: 15 }}>https://www.instagram.com/ieee_nitp</Text>
-                                </OpenURLButton>
-                            </View>
-
-                            <View style={styles.socialLink}>
-                                <Icon name="logo-facebook" style={{ paddingRight: 10 }} size={25} color='grey' />
-                                <OpenURLButton url="https://www.facebook.com/ieeenitp">
-                                    <Text style={{ color: '#0034BA', textDecorationLine: 'underline', fontWeight: '500', fontSize: 15 }}>https://www.facebook.com/ieeenitp</Text>
-                                </OpenURLButton>
-                            </View>
-
-                            <View style={styles.socialLink}>
-                                <Icon name="logo-linkedin" style={{ paddingRight: 10 }} size={25} color='grey' />
-                                <OpenURLButton url="https://www.linkedin.com/ieee_nitp">
-                                    <Text style={{ color: '#0034BA', textDecorationLine: 'underline', fontWeight: '500', fontSize: 15 }}>https://www.linkedin.com/ieeenitp</Text>
-                                </OpenURLButton>
-                            </View>
-
-                            <View style={styles.socialLink}>
-                                <Icon name="mail-outline" style={{ paddingRight: 10 }} size={25} color='grey' />
-                                <OpenURLButton url="mailto:contact_nitp@ieeenitp.com">
-                                    <Text style={{ color: '#0034BA', textDecorationLine: 'underline', fontWeight: '500', fontSize: 15 }}>contact_nitp@ieeenitp.com</Text>
-                                </OpenURLButton>
-                            </View>
-
-                            <View style={{alignSelf:'center',marginVertical:40, backgroundColor:'#2222', alignItems:'center', paddingHorizontal:20, borderRadius:20}}>
-                                <OpenURLButton url="https://www.roboticsnitp.co.in">
-                                    <Text style={{ color: '#3c4753', textAlign:'center', fontWeight: '500', fontSize: 15 }}>Visit Robotics Club Website</Text>
-                                </OpenURLButton>
-                            </View>
-
-                            
+                    {
+                        loading ? <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 200 }}>
+                            <ActivityIndicator size="large" color="#5ca1f7" />
                         </View>
-                    </View>
+                            :
+                            <View style={styles.textContainer}>
+                                <Text style={styles.heading}>About</Text>
+                                <Text style={styles.text}>
+                                    {clubs[0].about}
+                                </Text>
+
+                                <Text style={styles.heading}>Reach us at:</Text>
+
+                                <View style={styles.socialContainer}>
+
+                                    {
+                                        clubs[0].socials[0].instagram && <View style={styles.socialLink}>
+                                            <Icon name="logo-instagram" style={{ paddingRight: 10 }} size={25} color='grey' />
+                                            <OpenURLButton url={clubs[0].socials[0].instagram}>
+                                                <Text style={{ color: '#0034BA', textDecorationLine: 'underline', fontWeight: '500', fontSize: 15 }}>{clubs[0].socials[0].instagram}</Text>
+                                            </OpenURLButton>
+                                        </View>
+                                    }
+
+                                    {
+                                        clubs[0].socials[0].facebook && <View style={styles.socialLink}>
+                                            <Icon name="logo-facebook" style={{ paddingRight: 10 }} size={25} color='grey' />
+                                            <OpenURLButton url={clubs[0].socials[0].facebook}>
+                                                <Text style={{ color: '#0034BA', textDecorationLine: 'underline', fontWeight: '500', fontSize: 15 }}>{
+                                                    clubs[0].socials[0].facebook
+                                                }</Text>
+                                            </OpenURLButton>
+                                        </View>
+                                    }
+
+                                    {
+                                        clubs[0].socials[0].facebook && <View style={styles.socialLink}>
+                                            <Icon name="logo-linkedin" style={{ paddingRight: 10 }} size={25} color='grey' />
+                                            <OpenURLButton url={clubs[0].socials[0].linkedin}>
+                                                <Text style={{ color: '#0034BA', textDecorationLine: 'underline', fontWeight: '500', fontSize: 15 }}>{clubs[0].socials[0].linkedin}</Text>
+                                            </OpenURLButton>
+                                        </View>
+                                    }
+
+                                    {
+                                        clubs[0].socials[0].mail && <View style={styles.socialLink}>
+                                            <Icon name="mail-outline" style={{ paddingRight: 10 }} size={25} color='grey' />
+                                            <OpenURLButton url={"mailto:" + clubs[0].socials[0].mail}>
+                                                <Text style={{ color: '#0034BA', textDecorationLine: 'underline', fontWeight: '500', fontSize: 15}}>{clubs[0].socials[0].mail}</Text>
+                                            </OpenURLButton>
+                                        </View>
+                                    }
+
+                                    {
+                                        clubs[0].website && <View style={{ alignSelf: 'center', marginVertical: 40, backgroundColor: '#2222', alignItems: 'center', paddingHorizontal: 20, borderRadius: 20 }}>
+                                            <OpenURLButton url={clubs[0].website}>
+                                                <Text style={{ color: '#3c4753', textAlign: 'center', fontWeight: '500', fontSize: 15 }}>Visit Robotics Club Website</Text>
+                                            </OpenURLButton>
+                                        </View>
+                                    }
+
+
+                                </View>
+                            </View>
+                    }
                 </View>
             </ScrollView>
         </View>

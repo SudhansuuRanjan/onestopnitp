@@ -1,6 +1,5 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button, Image } from 'react-native'
-import React, { useState, useEffect } from 'react'
-import FlexDirectionBasics from '../components/FlexDirectionBasics';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native'
+import React, { useState, useEffect, useContext } from 'react'
 import Constants from 'expo-constants';
 const Profile = require('../assets/profile.jpg')
 const Notes = require('../assets/notes.png')
@@ -9,11 +8,13 @@ const Resources = require('../assets/resources.png')
 const Clubs = require('../assets/club.png')
 const Shopping = require('../assets/shopping.png')
 const Blogs = require('../assets/blogs.png')
+import AuthContext from "../context/AuthContext";
 
 
 const HomeScreen = ({ navigation }) => {
 
     const [msg, setmsg] = useState("Good morning")
+    const { setAuthorized, user, setUser } = useContext(AuthContext);
 
     useEffect(() => {
         let data = [
@@ -35,15 +36,16 @@ const HomeScreen = ({ navigation }) => {
 
     return (
         <>
-            {/* <FlexDirectionBasics/> */}
             <View style={styles.container}>
                 <View style={styles.header}>
                     <View style={styles.welcome}>
                         <Text style={styles.welcome1}>{msg}🌤️</Text>
-                        <Text style={styles.welcome2}>Sudhanshu</Text>
+                        <Text style={styles.welcome2}>{user ? user.displayName : "Guest"}</Text>
                     </View>
                     <TouchableOpacity style={styles.imgContainer} onPress={() => navigation.navigate('Profile')}>
-                        <Image source={Profile} style={styles.image} />
+                        <Image source={{
+                            uri: user?.photoURL,
+                        }} style={styles.image} />
                     </TouchableOpacity>
                 </View>
                 <Text style={styles.heading}>
@@ -118,7 +120,7 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: "row",
         justifyContent: 'space-between',
-        paddingVertical: 30,
+        paddingBottom: 30,
         paddingHorizontal: 20,
     },
     welcome1: {
@@ -127,7 +129,7 @@ const styles = StyleSheet.create({
         color: '#3c4753'
     },
     welcome2: {
-        fontSize: 27,
+        fontSize: 21,
         color: '#3c4753',
         fontWeight: '600',
     },
@@ -137,7 +139,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#666',
         marginBottom: 5,
-        paddingTop:20,
+        paddingTop: 20,
     },
     label: {
         textAlign: "center",

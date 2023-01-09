@@ -1,34 +1,56 @@
-import { View, Text, ScrollView, StyleSheet, Button, TouchableOpacity } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import Icon from 'react-native-vector-icons/Ionicons';
+import firestore from '@react-native-firebase/firestore';
 
 
-const Updates = ({ navigation }) => {
+const Updates = () => {
+
+    const [alerts, setAlerts] = useState();
+    const [loading, setLoading] = useState(true);
+
+    const alertRef = firestore().collection("Alerts");
+
+    useEffect(() => {
+        alertRef.onSnapshot((querySnapshot) => {
+            const alerts = [];
+            querySnapshot.forEach((doc) => {
+                alerts.push(doc.data());
+            });
+            setAlerts(alerts);
+            setLoading(false);
+            // console.log(alerts);
+        });
+    }, []);
 
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
 
-            <View style={styles.notifContainer}>
-                <View style={styles.icon}>
-                    <Icon name="notifications" style={{ marginHorizontal: 5 }} size={22} color='#5ca1f7' />
+            {
+                loading ? <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 200 }}>
+                    <ActivityIndicator size="large" color="#5ca1f7" />
                 </View>
-                <View style={styles.textContainer}>
-                    <Text style={styles.title}>New Feature alert</Text>
-                    <Text style={styles.desc}>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ex delectus provident aliquid quas molestias veniam.</Text>
-                </View>
-            </View>
+                    :
 
-            <View style={styles.notifContainer}>
-                <View style={styles.icon}>
-                    <Icon name="notifications" style={{ marginHorizontal: 5 }} size={22} color='#5ca1f7' />
-                </View>
-                <View style={styles.textContainer}>
-                    <Text style={styles.title}>New Feature alert</Text>
-                    <Text style={styles.desc}>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ex delectus provident aliquid quas molestias veniam.</Text>
-                </View>
-            </View>
+                    <View style={{paddingHorizontal:10}}>
+                        {
+                            alerts.map((alert, index) => (
+                                <View key={index} style={styles.notifContainer}>
+                                    <View style={styles.icon}>
+                                        <Icon name="notifications" style={{ marginHorizontal: 5 }} size={22} color='#5ca1f7' />
+                                    </View>
+                                    <View style={styles.textContainer}>
+                                        <Text style={styles.title}>{alert.title}</Text>
+                                        <Text style={styles.desc}>{alert.description}</Text>
+                                    </View>
+                                </View>
+                            ))
+                        }
+                    </View>
 
-        </View>
+            }
+
+        </ScrollView>
     )
 }
 
@@ -36,12 +58,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingVertical: 15,
-        paddingHorizontal: 23
     },
     notifContainer: {
         flexDirection: 'row',
         backgroundColor: 'white',
         padding: 15,
+        marginHorizontal: 23,
         borderRadius: 18,
         alignSelf: 'center',
         marginVertical: 5,

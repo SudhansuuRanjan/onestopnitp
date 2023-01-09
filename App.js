@@ -22,6 +22,7 @@ import AuthContext from './context/AuthContext';
 import NetInfo from "@react-native-community/netinfo";
 import BlogDescription from "./screens/BlogDescription";
 import ClubDetails from "./screens/ClubDetails";
+import 'expo-dev-client';
 
 const Stack = createNativeStackNavigator();
 
@@ -52,7 +53,7 @@ function Title({ text }) {
 }
 
 function LocalNavigator() {
-  const { auth } = useContext(AuthContext);
+  const { authorized } = useContext(AuthContext);
   return (
     <Stack.Navigator
       screenOptions={{
@@ -66,7 +67,7 @@ function LocalNavigator() {
         },
       }}>
 
-      {auth ? (
+      {authorized ? (
         <>
           <Stack.Screen
             name='HomeScreen'

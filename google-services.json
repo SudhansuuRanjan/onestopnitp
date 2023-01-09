@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "135954330209",
+    "project_id": "onestopnitp",
+    "storage_bucket": "onestopnitp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:135954330209:android:415a6004e5f856f35eb020",
+        "android_client_info": {
+          "package_name": "com.spectre_7.OneStopNITP"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "135954330209-76bb05shmt1qudisf5uao6amro6gei9e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.spectre_7.OneStopNITP",
+            "certificate_hash": "a2a67ebc91b224c4ef7fc45dee327247458cb12e"
+          }
+        },
+        {
+          "client_id": "135954330209-fo77gne928fqr4tnctaev5nf2puvo1gd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.spectre_7.OneStopNITP",
+            "certificate_hash": "7560a02833201ef2163a9b0e64378b5e98ec46e9"
+          }
+        },
+        {
+          "client_id": "135954330209-jv6rgfgo09130oi89rc470tua14hsk2h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCG7IboTGuOq1MpLtqaFNOBzy2p3ob_A5A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "135954330209-jv6rgfgo09130oi89rc470tua14hsk2h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

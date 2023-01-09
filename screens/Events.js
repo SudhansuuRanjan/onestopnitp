@@ -1,8 +1,9 @@
-import { View, Text, ScrollView, StyleSheet, Button, TouchableOpacity, Image } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Image } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Icon2 from 'react-native-vector-icons/Entypo';
+import firestore from '@react-native-firebase/firestore';
 
 const PastEvents = () => {
     return (
@@ -14,53 +15,75 @@ const PastEvents = () => {
 
 const UpcomingEvents = () => {
 
-    const upcomingEvents = [
-        {
-            title: ''
-        },
-        {
-            title: ''
-        },
-        {
-            title: ''
-        },
-        {
-            title: ''
-        },
-        {
-            title: ''
-        },
-    ]
+    const [upcomingEvents, setUpcomingEvents] = useState();
+    const [loading, setLoading] = useState(true);
+
+
+    const eventRef = firestore().collection("Events");
+    useEffect(() => {
+        eventRef.onSnapshot((querySnapshot) => {
+            const events = [];
+            querySnapshot.forEach((doc) => {
+                const {time,name,desc,imgUrl,location,tags} = doc.data();
+                events.push({
+                    name,
+                    desc,
+                    imgUrl,
+                    location,
+                    tags,
+                    time,
+                    eventDate:new Date(doc.data().date.seconds * 1000),
+                });
+            });
+            setUpcomingEvents(events);
+            setLoading(false);
+            // console.log(events);
+        });
+    }, []);
+
+
     return (
         <ScrollView style={{ flex: 1, paddingHorizontal: 10 }}>
 
-            <View style={{paddingBottom:50}}>
-                {upcomingEvents.map((e, index) => (
-                    <View key={index} style={styles.eventCard}>
-                        <View>
-                            <Image source={{ uri: "https://assets.glginsights.com/wp-content/uploads/2021/08/D1_Tech_HeaderImage.jpg" }} style={styles.eventImg} />
-
-                            <View style={styles.locationCont}>
-                                <Icon name="location-outline" style={{ marginHorizontal: 5 }} size={22} color='white' />
-                                <Text style={styles.locationText}>NITP Campus</Text>
-                            </View>
-                        </View>
-                        <View style={styles.cardHead}>
-                            <Text style={styles.cardData}>28 January, 2023</Text>
-                            <Icon2 name="dot-single" style={{ marginHorizontal: 5 }} size={12} color='grey' />
-                            <Text style={styles.cardData}>Full Day</Text>
-                        </View>
-                        <View style={styles.cardBody}>
-                            <Text style={styles.cardTitle}>Techno Cultural Fest</Text>
-                            <Text style={styles.cardDesc}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae distinctio magnam, tempora quo doloremque facilis?</Text>
-                        </View>
-                        <View style={styles.footer}>
-                            <Text style={styles.hashtag}>#Cultural</Text>
-                            <Text style={styles.hashtag}>#Technical</Text>
-                            <Text style={styles.hashtag}>#Fest</Text>
-                        </View>
+            <View style={{ paddingBottom: 50 }}>
+                {
+                    loading ? <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 200 }}>
+                        <ActivityIndicator size="large" color="#5ca1f7" />
                     </View>
-                ))}
+                        :
+                        <View>
+
+                            {upcomingEvents.map((e, index) => (
+                                <View key={index} style={styles.eventCard}>
+                                    <View>
+                                        <Image source={{ uri: e.imgUrl }} style={styles.eventImg} />
+
+                                        <View style={styles.locationCont}>
+                                            <Icon name="location-outline" style={{ marginHorizontal: 5 }} size={22} color='white' />
+                                            <Text style={styles.locationText}>{e.location}</Text>
+                                        </View>
+                                    </View>
+                                    <View style={styles.cardHead}>
+                                        <Text style={styles.cardData}>{e.eventDate.toDateString()}</Text>
+                                        <Icon2 name="dot-single" style={{ marginHorizontal: 5 }} size={12} color='grey' />
+                                        <Text style={styles.cardData}>{e.time}</Text>
+                                    </View>
+                                    <View style={styles.cardBody}>
+                                        <Text style={styles.cardTitle}>{e.name}</Text>
+                                        <Text style={styles.cardDesc}>{e.desc}</Text>
+                                    </View>
+                                    <View style={styles.footer}>
+                                        {
+                                            e.tags.map((tag,index)=>(
+                                              <Text key={index} style={styles.hashtag}>#{tag}</Text>  
+                                            ))
+                                        }
+                                    </View>
+                                </View>
+                            ))}
+
+                        </View>
+                }
             </View>
 
         </ScrollView>
@@ -136,7 +159,7 @@ const styles = StyleSheet.create({
     cardTitle: {
         fontSize: 20,
         fontWeight: '700',
-        color:"#3c4753",
+        color: "#3c4753",
     },
     cardDesc: {
         color: '#889399',

@@ -2,12 +2,26 @@ import { View, Text, Modal, StyleSheet, Image, TouchableOpacity, Pressable } fro
 import React, { useState, useContext } from 'react'
 const ProfileImg = require('../assets/profile.jpg')
 import AuthContext from "../context/AuthContext";
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import auth from '@react-native-firebase/auth';
 
 const Profile = ({ navigation }) => {
 
     const [modalVisible, setModalVisible] = useState(false)
+    const { setAuthorized, user, setUser } = useContext(AuthContext);
 
-    const { auth, authData, setAuth, setAuthData } = useContext(AuthContext);
+    const signOut = async () => {
+        setUser(null);
+        try {
+            await GoogleSignin.revokeAccess();
+            await auth().signOut();
+            setModalVisible(!modalVisible);
+            await setAuthorized(false);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
 
     return (
         <>
@@ -28,17 +42,16 @@ const Profile = ({ navigation }) => {
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%', paddingHorizontal: 20 }}>
                             <Pressable
                                 style={{}}
-                                onPress={() => setModalVisible(!modalVisible)}
+                                onPress={() => {
+                                    setModalVisible(!modalVisible);
+                                }}
                             >
                                 <Text style={{ color: '#2196F3', fontWeight: '500', fontSize: 16, padding: 10, }}>No</Text>
                             </Pressable>
 
                             <Pressable
                                 style={[styles.modalbutton, styles.buttonClose]}
-                                onPress={() => {
-                                    setAuth(false);
-                                    setModalVisible(!modalVisible);
-                                }}
+                                onPress={signOut}
                             >
                                 <Text style={styles.textStyle}>Yes</Text>
                             </Pressable>
@@ -48,16 +61,18 @@ const Profile = ({ navigation }) => {
             </Modal>
 
             <View style={styles.container}>
-                <Image source={ProfileImg} style={styles.image} />
+                <Image source={{
+            uri: user?.photoURL,
+          }} style={styles.image} />
                 <View style={styles.detail1}>
-                    <Text style={styles.name}>Sudhanshu Ranjan</Text>
+                    <Text style={styles.name}>{user?.displayName}</Text>
                     <Text style={styles.about}>A tech enthusiast who is keen to develop new skills | Contact Me: sudhanshuranjan2k18@gmail.com</Text>
                     <Text style={styles.course}>BTech</Text>
                     <Text style={styles.branch}>EE 2021</Text>
                 </View>
                 <View style={styles.block}>
                     <Text style={styles.blockHeading}>Email</Text>
-                    <Text style={styles.blockContent}>sudhanshuranjan2k18@gmail.com</Text>
+                    <Text style={styles.blockContent}>{user?.email}</Text>
                 </View>
                 <View style={styles.block}>
                     <Text style={styles.blockHeading}>College</Text>
