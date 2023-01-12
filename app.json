@@ -31,7 +31,15 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["@react-native-google-signin/google-signin"],
+    "plugins": [
+      "@react-native-google-signin/google-signin",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ]
+      ],
     "extra": {
       "eas": {
         "projectId": "b4e9b222-e084-49c3-8202-c8c156422361"
