@@ -43,7 +43,7 @@ const SellPostScreen = () => {
 
             setPosts(posts);
             setLoading(false);
-            console.log(posts);
+            // console.log(posts);
         });
     }, []);
 

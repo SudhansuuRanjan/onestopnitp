@@ -23,18 +23,19 @@ const SignIn = ({ navigation }) => {
         webClientId: '135954330209-jv6rgfgo09130oi89rc470tua14hsk2h.apps.googleusercontent.com',
     });
 
-    const userRef = firestore().collection("Clubs");
+    const userRef = firestore().collection("Users");
 
     useEffect(() => {
         userRef.onSnapshot((querySnapshot) => {
             const users = [];
             querySnapshot.forEach((doc) => {
-                const { Email, Name, displayImg } = doc.data();
+                const { Email, Name, displayImg,about } = doc.data();
                 users.push({
                     id: doc.id,
                     Email,
                     Name,
-                    displayImg
+                    displayImg,
+                    about,
                 });
             });
             setUsers(users);
@@ -53,6 +54,7 @@ const SignIn = ({ navigation }) => {
                 displayImg: loggedinUser.photoURL,
                 createdAt: firestore.Timestamp.fromDate(new Date()),
                 uid: loggedinUser.uid,
+                about:"",
             };
             userRef
                 .add(data)

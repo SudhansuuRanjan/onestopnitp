@@ -225,7 +225,7 @@ const UserPostScreen = () => {
                         <TextInput
                             style={styles.inputBig}
                             multiline={true}
-                            onChangeText={(e) => setDescription(e)}
+                            onChangeText={(e) => setDescription(e.trim())}
                             value={description}
                             placeholder="Enter Description"
                         />
@@ -248,7 +248,7 @@ const UserPostScreen = () => {
                         <Text style={{ color: '#5ca1f7', fontWeight: '500' }}>Email</Text>
                         <TextInput
                             style={styles.input}
-                            onChangeText={(e) => setEmail(e)}
+                            onChangeText={(e) => setEmail(e.trim())}
                             value={email}
                             placeholder="Enter Your Email"
                             autoComplete="email"
@@ -259,7 +259,7 @@ const UserPostScreen = () => {
                         <Text style={{ color: '#5ca1f7', fontWeight: '500' }}>WhapsApp No.</Text>
                         <TextInput
                             style={styles.input}
-                            onChangeText={(e) => setWhatsappNo(e)}
+                            onChangeText={(e) => setWhatsappNo(e.trim())}
                             value={whatsappNo}
                             placeholder="Enter WhatsApp No."
                         />
@@ -269,7 +269,7 @@ const UserPostScreen = () => {
                         <Text style={{ color: '#5ca1f7', fontWeight: '500' }}>Mobile No.</Text>
                         <TextInput
                             style={styles.input}
-                            onChangeText={(e) => setMobileNo(e)}
+                            onChangeText={(e) => setMobileNo(e.trim())}
                             value={mobileNo}
                             placeholder="Enter Mobile No."
                         />
