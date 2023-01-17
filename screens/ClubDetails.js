@@ -62,18 +62,18 @@ const ClubDetails = ({ navigation, route }) => {
 
                                     {
                                         clubs[0].socials[0].instagram && <View style={styles.socialLink}>
-                                            <Icon name="logo-instagram" style={{ paddingRight: 10 }} size={25} color='grey' />
+                                            <Icon name="logo-instagram" style={{ paddingRight: 10 }} size={25} color='#E4405F' />
                                             <OpenURLButton url={clubs[0].socials[0].instagram}>
-                                                <Text style={{ color: '#0034BA', textDecorationLine: 'underline', fontWeight: '500', fontSize: 15 }}>{clubs[0].socials[0].instagram}</Text>
+                                                <Text style={{ color: '#E4405F', textDecorationLine: 'underline', fontWeight: '500', fontSize: 15 }}>{clubs[0].socials[0].instagram}</Text>
                                             </OpenURLButton>
                                         </View>
                                     }
 
                                     {
                                         clubs[0].socials[0].facebook && <View style={styles.socialLink}>
-                                            <Icon name="logo-facebook" style={{ paddingRight: 10 }} size={25} color='grey' />
+                                            <Icon name="logo-facebook" style={{ paddingRight: 10 }} size={25} color='#3B5999' />
                                             <OpenURLButton url={clubs[0].socials[0].facebook}>
-                                                <Text style={{ color: '#0034BA', textDecorationLine: 'underline', fontWeight: '500', fontSize: 15 }}>{
+                                                <Text style={{ color: '#3B5999', textDecorationLine: 'underline', fontWeight: '500', fontSize: 15 }}>{
                                                     clubs[0].socials[0].facebook
                                                 }</Text>
                                             </OpenURLButton>
@@ -82,26 +82,26 @@ const ClubDetails = ({ navigation, route }) => {
 
                                     {
                                         clubs[0].socials[0].facebook && <View style={styles.socialLink}>
-                                            <Icon name="logo-linkedin" style={{ paddingRight: 10 }} size={25} color='grey' />
+                                            <Icon name="logo-linkedin" style={{ paddingRight: 10 }} size={25} color='#0077B5' />
                                             <OpenURLButton url={clubs[0].socials[0].linkedin}>
-                                                <Text style={{ color: '#0034BA', textDecorationLine: 'underline', fontWeight: '500', fontSize: 15 }}>{clubs[0].socials[0].linkedin}</Text>
+                                                <Text style={{ color: '#0077B5', textDecorationLine: 'underline', fontWeight: '500', fontSize: 15 }}>{clubs[0].socials[0].linkedin}</Text>
                                             </OpenURLButton>
                                         </View>
                                     }
 
                                     {
                                         clubs[0].socials[0].mail && <View style={styles.socialLink}>
-                                            <Icon name="mail-outline" style={{ paddingRight: 10 }} size={25} color='grey' />
+                                            <Icon name="mail-outline" style={{ paddingRight: 10 }} size={25} color='#DD4B39' />
                                             <OpenURLButton url={"mailto:" + clubs[0].socials[0].mail}>
-                                                <Text style={{ color: '#0034BA', textDecorationLine: 'underline', fontWeight: '500', fontSize: 15}}>{clubs[0].socials[0].mail}</Text>
+                                                <Text style={{ color: '#DD4B39', textDecorationLine: 'underline', fontWeight: '500', fontSize: 15}}>{clubs[0].socials[0].mail}</Text>
                                             </OpenURLButton>
                                         </View>
                                     }
 
                                     {
-                                        clubs[0].website && <View style={{ alignSelf: 'center', marginVertical: 40, backgroundColor: '#2222', alignItems: 'center', paddingHorizontal: 20, borderRadius: 20 }}>
+                                        clubs[0].website && <View style={{ alignSelf: 'center', marginVertical: 40, backgroundColor: '#5356b6', alignItems: 'center', paddingHorizontal: 20, borderRadius: 20 }}>
                                             <OpenURLButton url={clubs[0].website}>
-                                                <Text style={{ color: '#3c4753', textAlign: 'center', fontWeight: '500', fontSize: 15 }}>Visit Robotics Club Website</Text>
+                                                <Text style={{ color: 'white', textAlign: 'center', fontWeight: '500', fontSize: 15 }}>Visit Robotics Club Website</Text>
                                             </OpenURLButton>
                                         </View>
                                     }

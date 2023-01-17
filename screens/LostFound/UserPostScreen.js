@@ -71,7 +71,29 @@ const UserPostScreen = () => {
     postRef.where("creater", "==", user.email).onSnapshot((querySnapshot) => {
       const posts = [];
       querySnapshot.forEach((doc) => {
-        posts.push(doc.data());
+        const {
+            createdAt,
+            creater,
+            description,
+            email,
+            img,
+            mobileNo,
+            type,
+            user,
+            whatsappNo,
+          } = doc.data();
+          posts.push({
+            createdAt,
+            creater,
+            description,
+            email,
+            img,
+            mobileNo,
+            type,
+            user,
+            whatsappNo,
+            id: doc.id,
+          });
       });
 
       setPosts(posts);
@@ -166,6 +188,15 @@ const UserPostScreen = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const deletePost = async (postId) => {
+    await lostFoundRef
+      .doc(postId)
+      .delete()
+      .then(() => {
+        console.log("Post deleted!");
+      });
   };
 
   return (
@@ -351,6 +382,15 @@ const UserPostScreen = () => {
                                                 </OpenURLButton>
                                             </View>
                                         }
+
+                                        <Pressable
+                  onPress={async () => {
+                    await deletePost(post.id);
+                  }}
+                  style={[styles.button,{paddingVertical:7,marginVertical:10}]}
+                >
+                  <Text style={styles.text}>Delete</Text>
+                </Pressable>
                                     </View>
 
                                 </View>

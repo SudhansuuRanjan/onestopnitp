@@ -13,7 +13,7 @@ import AuthContext from "../context/AuthContext";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import auth from "@react-native-firebase/auth";
 import { ScrollView } from "react-native-gesture-handler";
-import Icon from "react-native-vector-icons/MaterialIcons";
+import Icon1 from "react-native-vector-icons/Ionicons";
 
 const getFormattedName = (foo) => {
   const words = foo.toLowerCase().split(" ");
@@ -42,7 +42,7 @@ const Profile = () => {
   };
 
   return (
-    <ScrollView style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1, backgroundColor: "white" }}>
       <Modal
         animationType="fade"
         transparent={true}
@@ -106,10 +106,27 @@ const Profile = () => {
           </View>
           <View>
             <Text style={styles.name}>
-              {getFormattedName(user?.displayName)}
+              {user && getFormattedName(user?.displayName)}
             </Text>
             <Text style={styles.itemText}>Student</Text>
             <Text style={styles.course}>BTech EE 2021</Text>
+            <Pressable
+              style={{
+                borderWidth: 1,
+                backgroundColor: "#f6eeff",
+                paddingVertical: 4,
+                paddingHorizontal: 10,
+                borderRadius: 10,
+                width: 150,
+                alignItems: "center",
+                borderColor: "#5356b6",
+                marginTop:15,
+              }}
+            >
+              <Text style={{ fontWeight: "500", color: "#5356b6" }}>
+                Edit Profile
+              </Text>
+            </Pressable>
           </View>
         </View>
 
@@ -142,42 +159,139 @@ const Profile = () => {
         <View>
           <Text
             style={{
-              color: "black",
-              fontSize: 22,
-              fontWeight: "500",
+              color: "#5356b6",
+              fontSize: 14,
+              fontWeight: "600",
               paddingHorizontal: 15,
+              marginTop: 15,
+              marginBottom: 10,
             }}
           >
-            Settings
+            TROUBLESHOOTHING
           </Text>
-        </View>
 
-        <View style={styles.itemWrap}>
-          <View>
-            <Text style={styles.itemHeading}>Edit Profile</Text>
-            <Text style={styles.itemText}>
-              Customize your profile, update your profile photo or delete your
-              account.
-            </Text>
+          <View style={styles.individualCont}>
+            <Icon1 style={{marginTop:2}} name="md-warning" size={22} color="grey" />
+            <View>
+              <Text style={{ fontSize: 17, fontWeight: "600", marginLeft: 15 }}>
+                Report an issue
+              </Text>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "500",
+                  marginLeft: 15,
+                  marginRight: 15,
+                  color: "grey",
+                }}
+              >
+                Report any bugs in the app.
+              </Text>
+            </View>
           </View>
 
-          <View>
-            <Icon name="keyboard-arrow-right" size={27} color="grey" />
+          <View style={styles.individualCont}>
+            <Icon1 style={{marginTop:2}} name="rocket" size={22} color="grey" />
+            <View>
+              <Text style={{ fontSize: 17, fontWeight: "600", marginLeft: 15 }}>
+                Request a feature or suggest an idea
+              </Text>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "500",
+                  marginLeft: 15,
+                  marginRight: 15,
+                  color: "grey",
+                }}
+              >
+                Suggestions are always welcome, I'll try my best to include your
+                idea in next update!
+              </Text>
+            </View>
           </View>
-        </View>
 
-        <View style={styles.itemWrap}>
-          <View>
-            <Text style={styles.itemHeading}>Edit Profile</Text>
-            <Text style={styles.itemText}>
-              Customize your profile, update your profile photo or delete your
-              account.
-            </Text>
+          <View style={styles.individualCont}>
+            <Icon1 style={{marginTop:2}}  name="md-download" size={22} color="grey" />
+            <View>
+              <Text style={{ fontSize: 17, fontWeight: "600", marginLeft: 15 }}>
+                App Updates
+              </Text>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "500",
+                  marginLeft: 15,
+                  marginRight: 15,
+                  color: "grey",
+                }}
+              >
+                Update to the latest version.
+              </Text>
+            </View>
           </View>
 
-          <View>
-            <Icon name="keyboard-arrow-right" size={27} color="grey" />
+          <View style={styles.individualCont}>
+            <Icon1 style={{marginTop:2}} name="heart" size={22} color="grey" />
+            <View>
+              <Text style={{ fontSize: 17, fontWeight: "600", marginLeft: 15 }}>
+                Rate and Review
+              </Text>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "500",
+                  marginLeft: 15,
+                  marginRight: 15,
+                  color: "grey",
+                }}
+              >
+                Give a 5 star and write what you love about the app.
+              </Text>
+            </View>
           </View>
+
+          <View style={styles.individualCont}>
+            <Icon1 style={{marginTop:2}} name="md-information-circle" size={22} color="grey" />
+            <View>
+              <Text style={{ fontSize: 17, fontWeight: "600", marginLeft: 15 }}>
+                About App
+              </Text>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "500",
+                  marginLeft: 15,
+                  marginRight: 15,
+                  color: "grey",
+                }}
+              >
+                Detailed info about app and developer.
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.individualCont}>
+            <Icon1 style={{marginTop:2}} name="share-social" size={22} color="grey" />
+            <View>
+              <Text style={{ fontSize: 17, fontWeight: "600", marginLeft: 15 }}>
+                Share App
+              </Text>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "500",
+                  marginLeft: 15,
+                  marginRight: 15,
+                  color: "grey",
+                }}
+              >
+                Share the app with your friends and colligues.
+              </Text>
+            </View>
+          </View>
+
+          {/* <Icon name="keyboard-arrow-right" size={27} color="grey" /> */}
         </View>
 
         <TouchableOpacity
@@ -188,6 +302,10 @@ const Profile = () => {
         >
           <Text style={styles.buttonLabel}>LogOut</Text>
         </TouchableOpacity>
+
+        <Text style={{ textAlign: "center", marginVertical: 20,color:'grey' }}>
+          App Version 1.0.0
+        </Text>
       </View>
     </ScrollView>
   );
@@ -207,33 +325,36 @@ const styles = StyleSheet.create({
   profile: {
     flexDirection: "row",
     paddingHorizontal: 15,
-    paddingTop: 15,
+    paddingTop: 25,
   },
   detail1: {
-    marginTop: 20,
+    marginTop: 10,
     paddingHorizontal: 20,
     borderBottomColor: "#ddd",
     borderBottomWidth: 1,
     paddingBottom: 20,
+    marginBottom: 30,
   },
   name: {
     fontSize: 20,
     fontWeight: "600",
     color: "#3c4753",
+    paddingTop: 5,
   },
   course: {
     fontSize: 16,
-    marginTop: 5,
     fontWeight: "500",
-    color: "#04a8d5",
+    color: "#5356b6",
   },
   button: {
     paddingHorizontal: 45,
     paddingVertical: 10,
-    borderRadius: 15,
-    backgroundColor: "#5ca1f7",
-    marginTop: 80,
+    borderRadius: 12,
+    backgroundColor: "#5356b6",
+    marginVertical: 20,
+    marginTop: 60,
     alignSelf: "center",
+    width: "90%",
   },
   buttonLabel: {
     color: "white",
@@ -300,13 +421,23 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   itemHeading: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: "600",
   },
   itemText: {
+    fontSize: 14,
     color: "grey",
     maxWidth: "90%",
     fontWeight: "500",
+  },
+  individualCont: {
+    flexDirection: "row",
+    backgroundColor: "white",
+    marginHorizontal: 10,
+    marginVertical: 7,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 12,
   },
 });
 
