@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   Pressable,
   Alert,
+  Button,
 } from "react-native";
 import React, { useState, useEffect, useCallback, useContext } from "react";
 import Icon from "react-native-vector-icons/Entypo";
@@ -113,63 +114,13 @@ const UserPostScreen = () => {
     setProductName("");
   };
 
-  const validateInput = () => {
-    let temp = true;
-    if (description === "") {
-      temp = false;
-      console.log("Insufficient Data!");
-    }
-    if (
-      email !== "" ||
-      whatsappNo !== "" ||
-      (mobileNo !== "" && description !== "")
-    ) {
-      temp = true;
-    }
-    return temp;
-  };
-
-  const uploadData = async (imgUrl) => {
-    console.log("Upload Data!");
-    const data = {
-      description,
-      type: selectedValue,
-      img: imgUrl,
-      email,
-      whatsappNo,
-      mobileNo,
-      price,
-      productName,
-      createdAt: firestore.Timestamp.fromDate(new Date()),
-      user: {
-        displayName: user.displayName,
-        email: user.email,
-        photoUrl: user.photoURL,
-        uid: user.uid,
-      },
-      creater: user.email,
-    };
-
-    await sellBuyRef
-      .add(data)
-      .then(() => {
-        console.log("Post Created");
-      })
-      .catch((error) => {
-        alert(error);
-      });
-
-    await resetForm();
-    setStatus(false);
-  };
-
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [6, 5],
-      quality: 1,
+      quality: 0.2,
     });
 
     if (!result.canceled) {
@@ -177,8 +128,27 @@ const UserPostScreen = () => {
     }
   };
 
-  const uploadImage = async () => {
-    console.log("Uploading Image!");
+  const uploadPost = async () => {
+    if (!image) {
+      return Alert.alert("Please select an image!");
+    } else if (description === "") {
+      return Alert.alert("Please enter description!");
+    } else if (email === "") {
+      return Alert.alert("Please enter email!");
+    } else if (mobileNo === "") {
+      return Alert.alert("Please enter mobile no!");
+    } else if (whatsappNo === "") {
+      return Alert.alert("Please enter whatsapp no!");
+    } else if (price === "") {
+      return Alert.alert("Please enter price!");
+    } else if (productName === "") {
+      return Alert.alert("Please enter product name!");
+    } else if (mobileNo.length != 10) {
+      return Alert.alert("Please enter valid mobile no!");
+    } else if (whatsappNo.length != 10) {
+      return Alert.alert("Please enter valid whatsapp no!");
+    }
+
     setStatus(true);
     setModalVisible1(true);
     const fileName = "OneStopNITP" + new Date().getTime().toString();
@@ -188,20 +158,60 @@ const UserPostScreen = () => {
     try {
       await reference.putFile(pathToFile);
       const url = await reference.getDownloadURL();
-      await uploadData(url);
-      console.log(url);
+
+      const data = {
+        description,
+        type: selectedValue,
+        img: url,
+        email,
+        whatsappNo,
+        mobileNo,
+        price,
+        productName,
+        createdAt: firestore.Timestamp.fromDate(new Date()),
+        user: {
+          displayName: user.displayName,
+          email: user.email,
+          photoUrl: user.photoURL,
+          uid: user.id,
+        },
+        creater: user.email,
+      };
+
+      await sellBuyRef.add(data);
+      await resetForm();
     } catch (error) {
-      console.log(error);
+      Alert.alert("Something went worng!", "Please try again later.");
     }
+    setStatus(false);
   };
 
-  const deletePost = async (postId) => {
-    await sellBuyRef
-      .doc(postId)
-      .delete()
-      .then(() => {
-        console.log("Post deleted!");
-      });
+  const deletePost = (postId) => {
+    // prompt for confirmation
+    console.log("Deleting post", postId);
+
+    Alert.alert(
+      "Delete Post",
+      "Are you sure you want to delete this post?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: async () =>
+            await sellBuyRef
+              .doc(postId)
+              .delete()
+              .then(() => {
+                console.log("Post deleted!");
+              }),
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   return (
@@ -322,7 +332,7 @@ const UserPostScreen = () => {
             <TextInput
               style={styles.inputBig}
               multiline={true}
-              onChangeText={(e) => setDescription(e.trim())}
+              onChangeText={(e) => setDescription(e)}
               value={description}
               placeholder="Enter Description"
             />
@@ -334,7 +344,7 @@ const UserPostScreen = () => {
             </Text>
             <TextInput
               style={styles.input}
-              onChangeText={(e) => setProductName(e.trim())}
+              onChangeText={(e) => setProductName(e)}
               value={productName}
               placeholder="Calculator,Books..."
             />
@@ -346,7 +356,7 @@ const UserPostScreen = () => {
             </Text>
             <TextInput
               style={styles.input}
-              onChangeText={(e) => setPrice(e.trim())}
+              onChangeText={(e) => setPrice(e)}
               value={price}
               placeholder="Price in Rupees"
             />
@@ -406,9 +416,12 @@ const UserPostScreen = () => {
           </View>
 
           <View style={styles.formGroup}>
-            <Pressable onPress={uploadImage} style={styles.button}>
-              <Text style={styles.text}>Post</Text>
-            </Pressable>
+            <View style={{ marginVertical: 15 }}>
+              <Button
+                onPress={uploadPost}
+                title="Post"
+              ></Button>
+            </View>
           </View>
         </ScrollView>
       </Modal>
@@ -535,14 +548,16 @@ const UserPostScreen = () => {
                   </View>
                 )}
 
-                <Pressable
-                  onPress={async () => {
-                    await deletePost(post.id);
-                  }}
-                  style={[styles.button,{paddingVertical:7,marginVertical:10}]}
-                >
-                  <Text style={styles.text}>Delete</Text>
-                </Pressable>
+                <View style={{ marginVertical: 15 }}>
+                  <Button
+                    onPress={() => deletePost(post.id)}
+                    style={[
+                      styles.button,
+                      { paddingVertical: 7, marginVertical: 10 },
+                    ]}
+                    title="Delete"
+                  ></Button>
+                </View>
               </View>
             </View>
           ))}

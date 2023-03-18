@@ -6,17 +6,19 @@ import {
   Image,
   TouchableOpacity,
   Pressable,
+  Alert,
 } from "react-native";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 const ProfileImg = require("../assets/profile.jpg");
 import AuthContext from "../context/AuthContext";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import auth from "@react-native-firebase/auth";
 import { ScrollView } from "react-native-gesture-handler";
 import Icon1 from "react-native-vector-icons/Ionicons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const getFormattedName = (foo) => {
-  const words = foo.toLowerCase().split(" ");
+  const words = foo ? foo.toLowerCase().split(" ") : "";
 
   for (let i = 0; i < words.length; i++) {
     words[i] = words[i][0].toUpperCase() + words[i].substr(1);
@@ -35,9 +37,11 @@ const Profile = () => {
       await GoogleSignin.revokeAccess();
       await auth().signOut();
       setModalVisible(!modalVisible);
+      // set user in async storage to null
+      await AsyncStorage.removeItem("user");
       await setAuthorized(false);
     } catch (error) {
-      console.log(error);
+      Alert.alert(error.message);
     }
   };
 
@@ -106,7 +110,7 @@ const Profile = () => {
           </View>
           <View>
             <Text style={styles.name}>
-              {user && getFormattedName(user?.displayName)}
+              {user ? getFormattedName(user?.displayName) : "Name"}
             </Text>
             <Text style={styles.itemText}>Student</Text>
             <Text style={styles.course}>BTech EE 2021</Text>
@@ -120,7 +124,7 @@ const Profile = () => {
                 width: 150,
                 alignItems: "center",
                 borderColor: "#5356b6",
-                marginTop:15,
+                marginTop: 15,
               }}
             >
               <Text style={{ fontWeight: "500", color: "#5356b6" }}>
@@ -171,7 +175,12 @@ const Profile = () => {
           </Text>
 
           <View style={styles.individualCont}>
-            <Icon1 style={{marginTop:2}} name="md-warning" size={22} color="grey" />
+            <Icon1
+              style={{ marginTop: 2 }}
+              name="md-warning"
+              size={22}
+              color="grey"
+            />
             <View>
               <Text style={{ fontSize: 17, fontWeight: "600", marginLeft: 15 }}>
                 Report an issue
@@ -191,7 +200,12 @@ const Profile = () => {
           </View>
 
           <View style={styles.individualCont}>
-            <Icon1 style={{marginTop:2}} name="rocket" size={22} color="grey" />
+            <Icon1
+              style={{ marginTop: 2 }}
+              name="rocket"
+              size={22}
+              color="grey"
+            />
             <View>
               <Text style={{ fontSize: 17, fontWeight: "600", marginLeft: 15 }}>
                 Request a feature or suggest an idea
@@ -212,7 +226,12 @@ const Profile = () => {
           </View>
 
           <View style={styles.individualCont}>
-            <Icon1 style={{marginTop:2}}  name="md-download" size={22} color="grey" />
+            <Icon1
+              style={{ marginTop: 2 }}
+              name="md-download"
+              size={22}
+              color="grey"
+            />
             <View>
               <Text style={{ fontSize: 17, fontWeight: "600", marginLeft: 15 }}>
                 App Updates
@@ -232,7 +251,12 @@ const Profile = () => {
           </View>
 
           <View style={styles.individualCont}>
-            <Icon1 style={{marginTop:2}} name="heart" size={22} color="grey" />
+            <Icon1
+              style={{ marginTop: 2 }}
+              name="heart"
+              size={22}
+              color="grey"
+            />
             <View>
               <Text style={{ fontSize: 17, fontWeight: "600", marginLeft: 15 }}>
                 Rate and Review
@@ -252,7 +276,12 @@ const Profile = () => {
           </View>
 
           <View style={styles.individualCont}>
-            <Icon1 style={{marginTop:2}} name="md-information-circle" size={22} color="grey" />
+            <Icon1
+              style={{ marginTop: 2 }}
+              name="md-information-circle"
+              size={22}
+              color="grey"
+            />
             <View>
               <Text style={{ fontSize: 17, fontWeight: "600", marginLeft: 15 }}>
                 About App
@@ -272,7 +301,12 @@ const Profile = () => {
           </View>
 
           <View style={styles.individualCont}>
-            <Icon1 style={{marginTop:2}} name="share-social" size={22} color="grey" />
+            <Icon1
+              style={{ marginTop: 2 }}
+              name="share-social"
+              size={22}
+              color="grey"
+            />
             <View>
               <Text style={{ fontSize: 17, fontWeight: "600", marginLeft: 15 }}>
                 Share App
@@ -303,7 +337,9 @@ const Profile = () => {
           <Text style={styles.buttonLabel}>LogOut</Text>
         </TouchableOpacity>
 
-        <Text style={{ textAlign: "center", marginVertical: 20,color:'grey' }}>
+        <Text
+          style={{ textAlign: "center", marginVertical: 20, color: "grey" }}
+        >
           App Version 1.0.0
         </Text>
       </View>

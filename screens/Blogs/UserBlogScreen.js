@@ -10,6 +10,7 @@ import {
   Alert,
   Pressable,
   TouchableOpacity,
+  Button,
 } from "react-native";
 import React, { useState, useEffect, useCallback, useContext } from "react";
 import * as ImagePicker from "expo-image-picker";
@@ -18,12 +19,24 @@ import AuthContext from "../../context/AuthContext";
 import storage from "@react-native-firebase/storage";
 import firestore from "@react-native-firebase/firestore";
 
+function generateUID() {
+  // I generate the UID from two parts here
+  // to ensure the random number provide enough bits.
+  var firstPart = (Math.random() * 46656) | 0;
+  var secondPart = (Math.random() * 46656) | 0;
+  var thirdPart = (Math.random() * 46656) | 0;
+  firstPart = ("000" + firstPart.toString(36)).slice(-3);
+  secondPart = ("000" + secondPart.toString(36)).slice(-3);
+  thirdPart = ("000" + thirdPart.toString(36)).slice(-3);
+  return firstPart + secondPart + thirdPart;
+}
+
 const getDate = (Timestamp) => {
   const date = new Date(Timestamp.seconds * 1000);
   return date.toDateString() + " " + date.toLocaleTimeString();
 };
 
-const UserBlogScreen = () => {
+const UserBlogScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisible1, setModalVisible1] = useState(false);
   const [image, setImage] = useState(null);
@@ -39,14 +52,24 @@ const UserBlogScreen = () => {
 
   const blogRef = firestore().collection("Blogs");
 
+  // get user posts from firestore
+  useEffect(() => {
+    blogRef.where("creater", "==", user.email).onSnapshot((querySnapshot) => {
+      const posts = [];
+      querySnapshot.forEach((doc) => {
+        const blog = doc.data();
+        blog.id = doc.id;
+        posts.push(blog);
+      });
+      setPosts(posts);
+      setLoading(false);
+    });
+  }, []);
+
   const resetForm = async () => {
     setImage(null);
     setBlogContent("");
     setBlogTitle("");
-  };
-
-  const validateInput = () => {
-    let temp = true;
   };
 
   const pickImage = async () => {
@@ -55,7 +78,7 @@ const UserBlogScreen = () => {
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [6, 5],
-      quality: 1,
+      quality: 0.4,
     });
 
     if (!result.canceled) {
@@ -63,8 +86,12 @@ const UserBlogScreen = () => {
     }
   };
 
-  const uploadImage = async () => {
-    console.log("Uploading Image!");
+  const uploadBlog = async () => {
+    if (blogTitle.length < 3 || blogContent.length < 10 || image === null) {
+      console.log("Error", "Please fill all the fields");
+      // return Alert.alert("Error", "Please fill all the fields");
+    }
+
     setStatus(true);
     setModalVisible1(true);
     const fileName = "OneStopNITP" + new Date().getTime().toString();
@@ -74,52 +101,57 @@ const UserBlogScreen = () => {
     try {
       await reference.putFile(pathToFile);
       const url = await reference.getDownloadURL();
-      await uploadData(url);
-      console.log(url);
+      console.log("Image Uploaded! :", url);
+      const data = {
+        img: url,
+        blogContent,
+        blogTitle,
+        createdAt: firestore.Timestamp.fromDate(new Date()),
+        blogLength: Math.ceil(blogContent.trim().split(/\s+/).length / 150),
+        blogId: generateUID(),
+        user: {
+          displayName: user.displayName,
+          email: user.email,
+          photoUrl: user.photoURL,
+          uid: user.id,
+          about: "A Javascript enthusiast.",
+        },
+        creater: user.email,
+      };
+      await blogRef.add(data);
+      await resetForm();
+      Alert.alert("Success", "Blog uploaded successfully!");
     } catch (error) {
-      console.log(error);
+      Alert.alert("Something went wrong! Please try again later.");
     }
-  };
-
-  const uploadData = async (imgUrl) => {
-    console.log("Upload Data!");
-    const data = {
-      img: imgUrl,
-      blogContent,
-      blogTitle,
-      createdAt: firestore.Timestamp.fromDate(new Date()),
-      blogLength: Math.ceil(blogContent.trim().split(/\s+/).length / 150),
-      user: {
-        displayName: user.displayName,
-        email: user.email,
-        photoUrl: user.photoURL,
-        uid: user.uid,
-        about: "A Javascript enthusiast.",
-      },
-      creater: user.email,
-    };
-
-    await blogRef
-      .add(data)
-      .then(() => {
-        console.log("Post Created");
-      })
-      .catch((error) => {
-        alert(error);
-      });
-    // console.log(data);
-
-    await resetForm();
     setStatus(false);
+    setModalVisible(false);
   };
 
   const deletePost = async (postId) => {
-    await blogRef
-      .doc(postId)
-      .delete()
-      .then(() => {
-        console.log("Post deleted!");
-      });
+    // prompt user to confirm delete
+    Alert.alert(
+      "Delete Post",
+      "Are you sure you want to delete this post?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: async () =>
+            await blogRef
+              .doc(postId)
+              .delete()
+              .then(() => {
+                console.log("Post deleted!");
+              }),
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   return (
@@ -259,14 +291,73 @@ const UserBlogScreen = () => {
           </View>
 
           <View style={styles.formGroup}>
-            <Pressable onPress={uploadImage} style={styles.button}>
-              <Text style={styles.text}>Post</Text>
-            </Pressable>
+            <Button
+              onPress={uploadBlog}
+              title="Post Blog"
+              style={styles.button}
+            ></Button>
           </View>
         </ScrollView>
       </Modal>
 
-      <Text>You haven't written any blogs.</Text>
+      {loading ? (
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <ActivityIndicator size="large" color="#5ca1f7" />
+        </View>
+      ) : posts.length === 0 ? (
+        <Text>You haven't written any blogs.</Text>
+      ) : (
+        <ScrollView>
+          {posts.map((blog, index) => (
+            <TouchableOpacity
+              onPress={() => navigation.navigate("BlogDesc", { blog })}
+              key={index}
+              style={styles.blogCardContainer}
+            >
+              <View style={styles.smallProfile}>
+                <Image
+                  source={{ uri: blog.user.photoUrl }}
+                  style={styles.smallImg}
+                />
+                <Text style={styles.smallName}>{blog.user.displayName}</Text>
+              </View>
+
+              <View style={styles.cardBody}>
+                <View style={styles.cardHeadContainer}>
+                  <Text style={styles.cardHead}>{blog.blogTitle}</Text>
+                </View>
+                <View style={styles.cardImgCont}>
+                  <Image source={{ uri: blog.img }} style={styles.cardImg} />
+                </View>
+              </View>
+
+              <View style={styles.cardFoot}>
+                <Text style={{ color: "#889399", fontSize: 14 }}>
+                  {getDate(blog.createdAt)}
+                </Text>
+                <Icon
+                  name="dot-single"
+                  style={{ marginHorizontal: 5 }}
+                  size={10}
+                  color="grey"
+                />
+                <Text style={{ color: "#889399", fontSize: 14 }}>
+                  {blog.blogLength} min read ✨
+                </Text>
+              </View>
+              <View style={{ marginVertical: 23 }}>
+                <Button
+                  title="Delete Blog"
+                  onPress={() => deletePost(blog.id)}
+                ></Button>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
+
       <TouchableOpacity
         onPress={() => setModalVisible(true)}
         style={styles.plusButton}

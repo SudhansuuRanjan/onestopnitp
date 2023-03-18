@@ -5,68 +5,90 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect} from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import Icon from "react-native-vector-icons/Entypo";
 const ProfileImg = require("../assets/profile.jpg");
 import UserBlogScreen from "./Blogs/UserBlogScreen";
+import firestore from "@react-native-firebase/firestore";
+
+const getDate = (Timestamp) => {
+  const date = new Date(Timestamp.seconds * 1000);
+  return date.toDateString() + " " + date.toLocaleTimeString();
+};
 
 function AllBlogsScreen({ navigation }) {
-  const blogs = [
-    {
-      title: "Hello",
-    },
-    {
-      title: "Hello",
-    },
-    {
-      title: "Hello",
-    },
-  ];
+  const [posts, setPosts] = useState();
+  const [loading, setLoading] = useState(true);
+
+  const blogRef = firestore().collection("Blogs");
+
+  useEffect(() => {
+    blogRef.onSnapshot((querySnapshot) => {
+      const posts = [];
+      querySnapshot.forEach((doc) => {
+        posts.push(doc.data());
+      });
+
+      setPosts(posts);
+      setLoading(false);
+      // console.log(posts);
+    });
+  }, []);
+
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView>
-        {blogs.map((blog, index) => (
-          <TouchableOpacity
-            onPress={() => navigation.navigate("BlogDesc")}
-            key={index}
-            style={styles.blogCardContainer}
-          >
-            <View style={styles.smallProfile}>
-              <Image source={ProfileImg} style={styles.smallImg} />
-              <Text style={styles.smallName}>Sudhanshu Ranjan</Text>
-            </View>
+      {loading ? (
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <ActivityIndicator size="large" color="#5ca1f7" />
+        </View>
+      ) : (
+        <ScrollView>
+          {posts.map((blog, index) => (
+            <TouchableOpacity
+              onPress={() => navigation.navigate("BlogDesc", { blog })}
+              key={index}
+              style={styles.blogCardContainer}
+            >
+              <View style={styles.smallProfile}>
+                <Image
+                  source={{ uri: blog.user.photoUrl }}
+                  style={styles.smallImg}
+                />
+                <Text style={styles.smallName}>{blog.user.displayName}</Text>
+              </View>
 
-            <View style={styles.cardBody}>
-              <View style={styles.cardHeadContainer}>
-                <Text style={styles.cardHead}>
-                  Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                  Alias, pariatur.
+              <View style={styles.cardBody}>
+                <View style={styles.cardHeadContainer}>
+                  <Text style={styles.cardHead}>{blog.blogTitle}</Text>
+                </View>
+                <View style={styles.cardImgCont}>
+                  <Image source={{ uri: blog.img }} style={styles.cardImg} />
+                </View>
+              </View>
+
+              <View style={styles.cardFoot}>
+                <Text style={{ color: "#889399", fontSize: 14 }}>
+                  {getDate(blog.createdAt)}
+                </Text>
+                <Icon
+                  name="dot-single"
+                  style={{ marginHorizontal: 5 }}
+                  size={10}
+                  color="grey"
+                />
+                <Text style={{ color: "#889399", fontSize: 14 }}>
+                  {blog.blogLength} min read ✨
                 </Text>
               </View>
-              <View style={styles.cardImgCont}>
-                <Image source={ProfileImg} style={styles.cardImg} />
-              </View>
-            </View>
-
-            <View style={styles.cardFoot}>
-              <Text style={{ color: "#889399", fontSize: 14 }}>
-                Jan 08, 2023
-              </Text>
-              <Icon
-                name="dot-single"
-                style={{ marginHorizontal: 5 }}
-                size={10}
-                color="grey"
-              />
-              <Text style={{ color: "#889399", fontSize: 14 }}>
-                4 min read ✨
-              </Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
     </View>
   );
 }

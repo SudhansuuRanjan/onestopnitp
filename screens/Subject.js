@@ -4,11 +4,7 @@ import { WebView } from 'react-native-webview';
 import { ScrollView } from 'react-native-gesture-handler';
 
 
-
 const image = { uri: "https://kcnit.ac.in/wp-content/uploads/2022/06/myhc_92371.jpg" };
-
-const supportedURL = "https://google.com";
-
 
 const OpenURLButton = ({ url, children }) => {
     const handlePress = useCallback(async () => {
